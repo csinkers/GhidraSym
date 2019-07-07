@@ -121,8 +121,7 @@ void parse_line(const char* line, std::vector<SymbolDef>& symbols, uint64_t &mod
 		const char *prefix = "\" END=\"";
 		for (; *s != 0 && *prefix != 0; s++) { if (*s == *prefix) prefix++; }
 		const uint64_t end_offset = strtoull(s, nullptr, 16);
-		symbols.back().offset = offset - module_offset;
-		symbols.back().size = end_offset - offset;
+		symbols.back().size = end_offset - symbols.back().offset ;
 	}
 }
 
