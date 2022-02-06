@@ -21,7 +21,7 @@ EXT_API_VERSION g_ExtApiVersion = {
 	 0
  } ;
 
-LPEXT_API_VERSION WDBGAPI ExtensionApiVersion (void)
+LPEXT_API_VERSION WDBGAPI ExtensionApiVersion()
 {
     return &g_ExtApiVersion;
 }
@@ -52,7 +52,7 @@ struct SymbolDef
 {
 	std::string name;
 	uint64_t offset;
-	uint64_t size;
+	uint32_t size;
 };
 
 bool has_prefix(const char **start, const char* prefix)
@@ -117,11 +117,10 @@ void parse_line(const char* line, std::vector<SymbolDef>& symbols, uint64_t &mod
 	}
 	else if (in_functions && has_prefix(&s, "<ADDRESS_RANGE START=\""))
 	{
-		const uint64_t offset = strtoull(s, nullptr, 16);
 		const char *prefix = "\" END=\"";
 		for (; *s != 0 && *prefix != 0; s++) { if (*s == *prefix) prefix++; }
 		const uint64_t end_offset = strtoull(s, nullptr, 16);
-		symbols.back().size = end_offset - symbols.back().offset ;
+		symbols.back().size = (uint32_t)(end_offset - symbols.back().offset);
 	}
 }
 
@@ -160,9 +159,9 @@ EXT_COMMAND(
 		Out("Registering symbols");
 
 		i = 0;
-		for (auto it = symbols.begin(); it != symbols.end(); ++it)
+		for (auto &it : symbols)
 		{
-			m_Symbols3->AddSyntheticSymbol((imagebase + it->offset), it->size, it->name.c_str(), DEBUG_ADDSYNTHSYM_DEFAULT, nullptr);
+			m_Symbols3->AddSyntheticSymbol(imagebase + it.offset, it.size, it.name.c_str(), DEBUG_ADDSYNTHSYM_DEFAULT, nullptr);
 			if (++i % 500 == 0) Out(".");
 		}
 		Out("\nSymbols registered\n", i);
