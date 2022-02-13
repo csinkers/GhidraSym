@@ -19,7 +19,7 @@ LPEXT_API_VERSION WDBGAPI ExtensionApiVersion() { return &g_ExtApiVersion; }
 
 VOID WDBGAPI WinDbgExtensionDllInit(PWINDBG_EXTENSION_APIS lpExtensionApis, USHORT usMajorVersion, USHORT usMinorVersion)
 {
-     ExtensionApis = *lpExtensionApis;
+	ExtensionApis = *lpExtensionApis;
 }
 
 class EXT_CLASS : public ExtExtension
@@ -82,7 +82,7 @@ bool skip_to(const char **start, const char *prefix)
 
 void parse_line(const char* line, std::map<uint64_t, SymbolDef>& symbols, uint64_t &module_offset)
 {
-    // Quick and dirty parsing.
+	// Quick and dirty parsing.
 	static bool in_functions = false;
 	static bool in_data = false;
 	static bool in_symbols = false;
@@ -91,27 +91,27 @@ void parse_line(const char* line, std::map<uint64_t, SymbolDef>& symbols, uint64
 	if (module_offset == 0 && has_prefix(&s, "<PROGRAM NAME=\""))
 	{
 		// <PROGRAM NAME="test.exe" EXE_PATH="C:/Tmp/ReversingTest/test.exe" EXE_FORMAT="Portable Executable (PE)" IMAGE_BASE="00400000">
-        if (skip_to(&s, "IMAGE_BASE=\""))
-            module_offset = strtoull(s, nullptr, 16);
-    }
-    else if (has_prefix(&s, "<FUNCTIONS"))    { in_functions = *s != '/'; }
-    else if (has_prefix(&s, "<DATA"))         { in_data = *s != '/'; }
-    else if (has_prefix(&s, "<SYMBOL_TABLE")) { in_symbols = *s != '/'; }
+		if (skip_to(&s, "IMAGE_BASE=\""))
+			module_offset = strtoull(s, nullptr, 16);
+	}
+	else if (has_prefix(&s, "<FUNCTIONS"))    { in_functions = *s != '/'; }
+	else if (has_prefix(&s, "<DATA"))         { in_data = *s != '/'; }
+	else if (has_prefix(&s, "<SYMBOL_TABLE")) { in_symbols = *s != '/'; }
 	else if (in_functions && has_prefix(&s, "</FUNCTIONS>"))  { in_functions = false;}
 	else if (in_data && has_prefix(&s, "</DATA>"))            { in_data = false;}
 	else if (in_symbols && has_prefix(&s, "</SYMBOL_TABLE>")) { in_symbols = false;}
 	else if (in_functions && has_prefix(&s, "<FUNCTION ENTRY_POINT=\""))
 	{
-        /*
-        <FUNCTION ENTRY_POINT="00401005" NAME="gets_s" LIBRARY_FUNCTION="n">
-            <ADDRESS_RANGE START="00401005" END="00401009" />
-            <TYPEINFO_CMT>undefined __cdecl gets_s(char * buffer)</TYPEINFO_CMT>
-            <STACK_FRAME LOCAL_VAR_SIZE="0xc8" PARAM_OFFSET="0x4" RETURN_ADDR_SIZE="0x0" BYTES_PURGED="0">
-                <STACK_VAR STACK_PTR_OFFSET="-0xc4" NAME="local_c4" DATATYPE="undefined1" DATATYPE_NAMESPACE="/" SIZE="0x1" />
-                <STACK_VAR STACK_PTR_OFFSET="0x4" NAME="buffer" DATATYPE="char *" DATATYPE_NAMESPACE="/" SIZE="0x4" />
-            </STACK_FRAME>
-        </FUNCTION>
-        */
+		/*
+		<FUNCTION ENTRY_POINT="00401005" NAME="gets_s" LIBRARY_FUNCTION="n">
+			<ADDRESS_RANGE START="00401005" END="00401009" />
+			<TYPEINFO_CMT>undefined __cdecl gets_s(char * buffer)</TYPEINFO_CMT>
+			<STACK_FRAME LOCAL_VAR_SIZE="0xc8" PARAM_OFFSET="0x4" RETURN_ADDR_SIZE="0x0" BYTES_PURGED="0">
+				<STACK_VAR STACK_PTR_OFFSET="-0xc4" NAME="local_c4" DATATYPE="undefined1" DATATYPE_NAMESPACE="/" SIZE="0x1" />
+				<STACK_VAR STACK_PTR_OFFSET="0x4" NAME="buffer" DATATYPE="char *" DATATYPE_NAMESPACE="/" SIZE="0x4" />
+			</STACK_FRAME>
+		</FUNCTION>
+		*/
 		const uint64_t offset = strtoull(s, nullptr, 16) - module_offset;
 
 		if (skip_to(&s, "\" NAME=\""))
@@ -207,7 +207,7 @@ EXT_COMMAND(
 		while (getline(fs, buff))
 		{
 			if (m_Control3->GetInterrupt() == S_OK) break;
-            parse_line(buff.c_str(), symbols, offset);
+			parse_line(buff.c_str(), symbols, offset);
 			if (++i % 500 == 0) Out(".");
 		}
 		fs.close();
