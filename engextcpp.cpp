@@ -2644,7 +2644,7 @@ ExtExtension::HandleKnownStruct(_In_ PDEBUG_CLIENT Client,
     }
     else if (Flags == DEBUG_KNOWN_STRUCT_GET_SINGLE_LINE_OUTPUT &&
              Buffer != NULL &&
-             BufferChars > 0)
+             BufferChars != NULL)
     {
         //
         // Dispatch request to method.
